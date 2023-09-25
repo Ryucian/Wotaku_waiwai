@@ -212,6 +212,7 @@ function ResetOffSet(canvas,images)
  */
 function mouseMove(e,canvas,context) 
 {
+	e.preventDefault();
     // ドラッグ終了位置
     var posX = (e.clientX - canvas.offsetLeft);
     var posY = (e.clientY - canvas.offsetTop);
@@ -247,6 +248,7 @@ function mouseMove(e,canvas,context)
  */
 function mouseDown(e,canvas) 
 {
+	e.preventDefault();
     //console.log("mouse down");
     // ドラッグ開始位置
     var posX = (e.clientX - canvas.offsetLeft);
@@ -268,6 +270,65 @@ function mouseDown(e,canvas)
             isDragging = true;
             //console.log("posX="+posX+";posY="+posY+";imgX="+images[i].drawOffsetX+";imgY="+images[i].drawOffsetY+";width="+images[i].drawWidth+";height="+images[i].drawHeight);
             //console.log("imgBottom="+(images[i].drawOffsetY + images[i].drawHeight)); 
+            break;
+        }       
+    }
+}
+
+/**
+ * 画面がスワイプされたときの処理
+ * @param {TouchEvent} e 
+ */
+function touchMove(e,canvas,context) 
+{
+	e.preventDefault();
+    // ドラッグ終了位置
+    var posX = (e.touches[0].clientX - canvas.offsetLeft);
+    var posY = (e.touches[0].clientY - canvas.offsetTop);
+
+    //ドラッグしていなければ処理を終了
+    if(!isDragging) return;
+
+    // canvas内を一旦クリア
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i in images) 
+    {
+        if (parseInt(i) == dragTarget) 
+        {
+            // ドラッグが終了した時の情報を記憶
+            images[i].drawOffsetX = posX - images[i].drawWidth / 2;
+            images[i].drawOffsetY = posY - images[i].drawHeight / 2;
+        }
+        DrawImage(context,images[i]);
+    }
+
+	upsetImages(canvas,context);
+    SaveOffSet(images);
+}
+
+/**
+ * 画面がタップされたときの処理
+ * @param {TouchEvent} e 
+ * @param {HTMLCanvasElement} canvas
+ */
+function touchStart(e,canvas) 
+{
+	e.preventDefault();
+    //console.log("mouse down");
+    // ドラッグ開始位置
+    var posX = (e.touches[0].clientX - canvas.offsetLeft);
+    var posY = (e.touches[0].clientY - canvas.offsetTop);
+
+    for (var i = images.length - 1; i >= 0; i--) {
+        // 当たり判定（ドラッグした位置が画像の範囲内に収まっているか）
+        if (posX >= images[i].drawOffsetX &&
+            posX <= (Number(images[i].drawOffsetX) + Number(images[i].drawWidth)) &&
+            posY >= images[i].drawOffsetY &&
+            posY <= (Number(images[i].drawOffsetY) + Number(images[i].drawHeight))
+        ) {            
+            dragTarget = i;
+            isDragging = true;
             break;
         }       
     }
@@ -372,6 +433,13 @@ export function init(canvas)
 	canvas.addEventListener('mousemove', function(e){mouseMove(e,canvas,context);}, false);
 	canvas.addEventListener('mouseup',   function(e){mouseUp(e);},   false);
 	canvas.addEventListener('mouseout',  function(e){mouseOut(e);},  false);
+
+	if('ontouchend' in canvas){
+		canvas.addEventListener('touchstart',  function(e){touchStart(e,canvas);}, false);
+		canvas.addEventListener('touchmove',   function(e){touchMove(e,canvas,context);}, false);
+		canvas.addEventListener('touchend',    function(e){mouseUp(e);},   false);
+		canvas.addEventListener('touchcancel', function(e){mouseOut(e);},  false);
+	}
 
     upsetImages(canvas,context);
 }
