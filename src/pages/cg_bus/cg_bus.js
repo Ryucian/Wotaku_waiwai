@@ -1,16 +1,10 @@
-import './App.css';
-import {init} from './ts/main.ts';
+import './cg_bus.css';
+import {init} from '../../ts/main';
 import React, { Component } from 'react'
 
-class App extends Component 
+class CG_BUS extends Component 
 {
   canvas =  React.createRef();
-
-    onClick() {
-        // DOM要素から値を抽出する.
-        let emailAddress = this.emailInput.value
-        console.log(emailAddress)
-    }
 
     render() {
 
@@ -26,4 +20,4 @@ class App extends Component
       init(this.canvas.current);
     }
 }
-export default App;
+export default CG_BUS;
