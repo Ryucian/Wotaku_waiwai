@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
+        "jsx": "react",
         "noEmit": true,
-        "allowImportingTsExtensions" : true
+        "allowImportingTsExtensions" : true,
+        "esModuleInterop" : true,
     }
 }

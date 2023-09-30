@@ -1,4 +1,24 @@
+import { SyntheticEvent } from "react";
 import CanvasImage from "./CanvasImage.ts"
+
+/**
+ * Canvas上の座標を保持するクラス
+ */
+export class CanvasPoint
+{
+	public x:number = 0;
+	public y:number = 0;
+
+	/**
+	 * 座標間の距離を取得する
+	 * @param x 
+	 * @param y 
+	 */
+	public getDistance(x,y):number
+	{
+		return 0;
+	}
+}
 
 /**
  * URLからパラメータを取得する
@@ -73,23 +93,61 @@ export function PutImgToAry(images:any[],canvasImages:CanvasImage[])
 		canvasImages[idx].img.src = images[i];
 	}
 }
-/**
- * ロードが完了した時に画面を描画するようにします
- * @param images 
- * @param canvasImages 
- */
-export function SetLoadEvent(canvasImages:CanvasImage[],upsetImages:(canvas,context)=> void,canvas,context,loadCounter:number)
-{
-	const imgLen = canvasImages.length;
 
-	for(let i=0;i<imgLen;i++)
-	{
-		canvasImages[i].img.onload = function() {
-			loadCounter++;
-			if(imgLen==loadCounter)
-			{
-				upsetImages(canvas,context);
-			}
-		}
-	}
+/**
+ * マウスイベントからキャンバス上の座標を取得する処理
+ * @param canvas 
+ * @param event 
+ */
+export function GetCanvasPointFromMouseEvent(canvas:HTMLCanvasElement,event:MouseEvent):CanvasPoint
+{
+	return GetCanvasPointFromClientXY(canvas,event.clientX,event.clientY);
+}
+
+/**
+ * タッチからキャンバス上の座標を取得する処理
+ * @param canvas 
+ * @param event 
+ */
+export function GetCanvasPointFromTouchEvent(canvas:HTMLCanvasElement,event:TouchEvent):CanvasPoint
+{
+	return GetCanvasPointFromClientXY(canvas,event.touches[0].clientX,event.touches[0].clientY);
+}
+
+/**
+ * マウスの座標からキャンバス上の座標を取得する処理
+ * @param canvas 
+ * @param event 
+ */
+export function GetCanvasPointFromClientXY(canvas:HTMLCanvasElement,clientX:number,clientY:number):CanvasPoint
+{
+	let cp = new CanvasPoint();
+	cp.x = (clientX - canvas.offsetLeft) * (canvas.width /canvas.clientWidth);
+	cp.y = (clientY - canvas.offsetTop) * (canvas.height/canvas.clientHeight);
+	return cp;
+}
+
+/**
+ * 文字を黒字に白枠で描画する
+ * @param {HTMLCanvasElement} canvas 
+ * @param str 
+ * @param x 
+ * @param y 
+ */
+export function drawFrameText(canvas:HTMLCanvasElement,str:string,x:number,y:number)
+{
+	var ctx = canvas.getContext('2d');
+	ctx.font = "16px serif";
+	//ctx.fillText(str, x,y);
+	ctx.strokeStyle = "#fff";
+	ctx.lineWidth = 4;
+	ctx.lineJoin = "miter";
+	ctx.miterLimit = 5
+	ctx.strokeText(str, x,y);
+	
+	ctx.strokeStyle = "#000";
+	ctx.lineWidth = 1;
+	ctx.lineJoin = "miter";
+	ctx.miterLimit = 3
+	ctx.strokeText(str, x,y);
 }

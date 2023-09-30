@@ -24,7 +24,7 @@ import shhis_nichika from "../img/sc/thumb_shhis_nichika.jpg";
 import straylight_asahi from "../img/sc/thumb_straylight_asahi.jpg";
 import straylight_fuyuko from "../img/sc/thumb_straylight_fuyuko.jpg";
 import straylight_mei from "../img/sc/thumb_straylight_mei.jpg";
-export const srcs =[
+export const SC_SRCS =[
     alstroemeria_amana,
     alstroemeria_chiyuki,
     alstroemeria_tenka,
